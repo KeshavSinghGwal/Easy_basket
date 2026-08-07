@@ -539,7 +539,7 @@ class _AddressListScreenState extends State<AddressListScreen> {
                               border: Border.all(
                                 color: isSelected ? const Color(0xFF0C831F) : Colors.transparent,
                                 width: 1.5,
-                              ),
+                             ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.06),
@@ -574,7 +574,7 @@ class _AddressListScreenState extends State<AddressListScreen> {
                                 Provider.of<ProximityProvider>(context, listen: false).reset();
                                 // Switch promo notification topic to selected address pincode
                                 NotificationService().switchPincodeTopic(address.pincode);
-
+                                
                                 if (_isFromCheckout) {
                                   // From checkout — select and stay on list
                                   setState(() => _selectedAddressId = address.id);
