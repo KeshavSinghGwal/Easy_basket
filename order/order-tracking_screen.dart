@@ -182,7 +182,6 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen>
     final fmt = DateFormat('h:mm a');
     return '${fmt.format(start)} - ${fmt.format(end)}';
   }
-
   Color _statusColor(String status) {
     switch (status) {
       case 'pending':
@@ -200,7 +199,6 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen>
         return Colors.grey;
     }
   }
-
   // ═══════════════════════════════════════
   // BUILD
   // ═══════════════════════════════════════
