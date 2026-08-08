@@ -14,7 +14,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   final int orderId;
-
   const OrderTrackingScreen({super.key, required this.orderId});
 
   @override
