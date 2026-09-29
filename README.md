@@ -111,6 +111,7 @@ Easy_basket/
 │
 ├── .gitignore
 └── README.md
+```
 
 ## 👨‍💻 Author
 
