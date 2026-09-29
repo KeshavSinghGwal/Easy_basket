@@ -1,0 +1,103 @@
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Node.js
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Flutter
+# =========================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+
+# =========================
+# Android
+# =========================
+android/.gradle/
+android/local.properties
+android/key.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# =========================
+# iOS
+# =========================
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+
+# =========================
+# IDE
+# =========================
+.idea/
+.vscode/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Certificates / Keys
+# =========================
+*.pem
+*.key
+*.keystore
+*.jks
+# EasyBasket development files
+mobile/_*.png
+mobile/Untitled
+
+# Firebase local configuration
+mobile/android/app/google-services.json
+
+# Local/deployment scripts and internal setup docs
+backend/deploy.sh
+backend/ec2-setup.sh
+backend/setup-nginx.sh
+backend/add-s3-bucket-name.sh
+backend/fix-*.sh
+backend/*_SETUP.md
+backend/*_UPGRADE.md
+backend/FIX_*.md
+# Firebase configuration
+mobile/android/app/google-services.json
+
+# EasyBasket development screenshots/files
+mobile/_*.png
+mobile/Untitled
+
+# Deployment/debug scripts
+backend/deploy.sh
+backend/ec2-setup.sh
+backend/setup-nginx.sh
+backend/add-s3-bucket-name.sh
+backend/fix-*.sh
+
+# Infrastructure setup documentation
+backend/CLOUDFRONT_S3.md
+backend/EC2_INSTANCE_UPGRADE.md
+backend/FIX_S3_PRODUCTION.md
+backend/S3_SETUP_GUIDE.md
+backend/TWILIO_SETUP.md
