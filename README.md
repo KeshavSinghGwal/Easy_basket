@@ -1,24 +1,29 @@
 # 🛒 EasyBasket
 
-A full-stack grocery delivery platform built with Flutter and
-Node.js/TypeScript.
+A full-stack grocery delivery platform built with Flutter and Node.js/TypeScript.
 
 ## 📱 Application Screenshots
 
-### Home
-![Home](screenshots/home.png)
+### 🏠 Home
+![Home](screenshots/01-home_user.jpeg)
 
-### Shops
-![Shops](screenshots/shops.png)
+### 🛠️ Admin Actions
+![Admin Actions](screenshots/02-Manage_actions_admin.jpeg)
 
-### Products
-![Products](screenshots/products.png)
+### 📦 My Orders
+![My Orders](screenshots/03-Myorders_user.jpeg)
 
-### Cart
-![Cart](screenshots/cart.png)
+### 💰 Admin Refunds
+![Admin Refunds](screenshots/04-Refund_admin.jpeg)
 
-### Checkout
-![Checkout](screenshots/checkout.png)
+### 🛠️ Admin Manage Orders
+![Admin Manage Orders](screenshots/05-manage-orders_admin.jpeg)
 
-### Orders
-![Orders](screenshots/orders.png)
+### 💳 Payment
+![Payment](screenshots/06-payment_user.jpeg)
+
+### 🛍️ Products
+![Products](screenshots/07-products_user.jpeg)
+
+### 👤 Profile
+![Profile](screenshots/08-profile_user.jpeg)
