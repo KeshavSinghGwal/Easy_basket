@@ -101,3 +101,4 @@ backend/EC2_INSTANCE_UPGRADE.md
 backend/FIX_S3_PRODUCTION.md
 backend/S3_SETUP_GUIDE.md
 backend/TWILIO_SETUP.md
+backend/fix-category-index-manual.js
