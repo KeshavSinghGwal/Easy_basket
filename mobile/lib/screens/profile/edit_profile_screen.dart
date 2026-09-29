@@ -1,9 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/theme.dart';
@@ -22,13 +20,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   DateTime? _selectedBirthday;
   bool _isSaving = false;
 
-  // --- Profile picture state ---
-  final ImagePicker _imagePicker = ImagePicker();
-  File? _localImageFile; // local preview immediately after picking
-  bool _isUploadingImage = false;
-
-  static const int _maxImageSizeBytes = 5 * 1024 * 1024; // 5MB
-  static const List<String> _allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
 
   @override
   void initState() {
@@ -82,117 +73,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Future<void> _showImageSourceSheet() async {
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppTheme.lightGrey,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: Icon(Icons.photo_library_outlined, color: AppTheme.primaryGreen),
-                title: const Text('Choose from Gallery'),
-                onTap: () => Navigator.pop(context, ImageSource.gallery),
-              ),
-              ListTile(
-                leading: Icon(Icons.camera_alt_outlined, color: AppTheme.primaryGreen),
-                title: const Text('Take a Photo'),
-                onTap: () => Navigator.pop(context, ImageSource.camera),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-
-    if (source == null) return; // user cancelled the sheet
-
-    await _pickImage(source);
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    try {
-      final XFile? picked = await _imagePicker.pickImage(
-        source: source,
-        maxWidth: 1600,
-        imageQuality: 85,
-      );
-
-      if (picked == null) {
-        // user cancelled the picker
-        return;
-      }
-
-      final extension = picked.path.split('.').last.toLowerCase();
-      if (!_allowedExtensions.contains(extension)) {
-        _showSnackBar('Please select a JPG, PNG, or WEBP image.');
-        return;
-      }
-
-      final file = File(picked.path);
-      final sizeBytes = await file.length();
-      if (sizeBytes > _maxImageSizeBytes) {
-        _showSnackBar('Image is too large. Please choose one under 5MB.');
-        return;
-      }
-
-      setState(() {
-        _localImageFile = file; // show preview immediately
-      });
-
-      await _uploadProfileImage(file);
-    } catch (e) {
-      _showSnackBar('Could not open image picker. Please try again.');
-    }
-  }
-
-  Future<void> _uploadProfileImage(File file) async {
-    setState(() => _isUploadingImage = true);
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    try {
-      // NOTE: assumes AuthProvider exposes updateProfileImage(File), which
-      // uploads via the existing image upload service, updates the in-memory
-      // user with the new profileImageUrl, and calls notifyListeners().
-      await authProvider.updateProfileImage(file);
-
-      if (!mounted) return;
-
-      if (authProvider.error == null) {
-        _showSnackBar('Profile photo updated', isError: false);
-      } else {
-        // Revert local preview on failure so it doesn't show a "successful"
-        // image that was never actually saved.
-        setState(() => _localImageFile = null);
-        _showSnackBar(authProvider.error ?? 'Failed to upload photo');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _localImageFile = null);
-        _showSnackBar('Failed to upload photo: ${e.toString()}');
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isUploadingImage = false);
-      }
-    }
-  }
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
@@ -249,65 +129,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Widget _buildAvatarImage(String? profileImageUrl) {
-    if (_localImageFile != null) {
-      return ClipOval(
-        child: Image.file(
-          _localImageFile!,
-          width: 100,
-          height: 100,
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-
-    if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
-      return ClipOval(
-        child: Image.network(
-          profileImageUrl,
-          width: 100,
-          height: 100,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            // broken URL -> fall back to default icon
-            return Icon(
-              Icons.person_rounded,
-              size: 50,
-              color: AppTheme.primaryGreen,
-            );
-          },
-          loadingBuilder: (context, child, progress) {
-            if (progress == null) return child;
-            return SizedBox(
-              width: 100,
-              height: 100,
-              child: Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppTheme.primaryGreen,
-                  value: progress.expectedTotalBytes != null
-                      ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
-                      : null,
-                ),
-              ),
-            );
-          },
-        ),
-      );
-    }
-
-    return Icon(
-      Icons.person_rounded,
-      size: 50,
-      color: AppTheme.primaryGreen,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final dateFormat = DateFormat('dd MMM yyyy');
-    final profileImageUrl = authProvider.user?.profileImageUrl;
 
     return Scaffold(
       backgroundColor: AppTheme.lightGrey,
@@ -332,93 +158,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              const SizedBox(height: 24),
-              // Profile Picture Section
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppTheme.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 15,
-                      offset: const Offset(0, 4),
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppTheme.primaryGreen.withOpacity(0.1),
-                            border: Border.all(
-                              color: AppTheme.primaryGreen.withOpacity(0.3),
-                              width: 2,
-                            ),
-                          ),
-                          child: Center(
-                            child: _isUploadingImage
-                                ? SizedBox(
-                                    width: 32,
-                                    height: 32,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: AppTheme.primaryGreen,
-                                    ),
-                                  )
-                                : _buildAvatarImage(profileImageUrl),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: _isUploadingImage ? null : _showImageSourceSheet,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryGreen,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: AppTheme.white, width: 2),
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt_rounded,
-                                size: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      AppLocalizations.of(context).profilePicture,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppTheme.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _isUploadingImage ? 'Uploading...' : 'Tap the camera icon to change photo',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.grey.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(height: 24),
               // Form Fields
               Container(
