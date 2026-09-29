@@ -1,3 +1,0 @@
-Easy-basket :
-frontend 
-backend 
